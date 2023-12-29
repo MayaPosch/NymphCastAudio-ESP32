@@ -1,0 +1,23 @@
+{
+    "name": "NPocoNet",
+    "version": "1.0.0",
+    "description": "NPoco networking library.",
+    "keywords": "cross-platform",
+    "license": "BSD",
+    "frameworks": "*",
+    "platforms": "*",
+	"build": {
+		"srcDir": "src",
+		"includeDir": "include/npoco/net",
+		"unflags": [
+			"-std=gnu++11",
+			"-fno-rtti"
+		],
+		"flags": [
+			"-D__FREERTOS__",
+			"-DLWIP_COMPAT_SOCKETS",
+			"-std=gnu++14",
+			"-I include"
+		]
+	}
+}

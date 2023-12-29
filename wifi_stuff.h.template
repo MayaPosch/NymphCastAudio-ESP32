@@ -1,0 +1,4 @@
+
+// Set to current AP SSID & PWD
+#define ESP_WIFI_SSID	  "WiFi_SSID_here"
+#define ESP_WIFI_PASS	  "WiFi_password_here"

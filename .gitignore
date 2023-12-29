@@ -1,0 +1,5 @@
+build/
+*.zip
+*.bak*
+sdkconfig
+wifi_stuff.h

@@ -1,0 +1,3 @@
+CPPFLAGS += __FREERTOS__
+CXXFLAGS += -std=gnu++14 -O0
+COMPONENT_SRCDIRS := src

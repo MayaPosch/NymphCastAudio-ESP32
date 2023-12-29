@@ -1,0 +1,29 @@
+{
+    "name": "libswresample",
+    "version": "5.1.0",
+    "frameworks": "*",
+    "platforms": "*",
+	"build": {
+		"srcDir": "libswresample",
+		"includeDir": ".",
+		"srcFilter": [
+			"+<audioconvert.c>",
+			"+<dither.c>",
+			"+<options.c>",
+			"+<rematrix.c>",
+			"+<resample.c>",
+			"+<resample_dsp.c>",
+			"+<swresample.c>",
+			"+<swresample_frame.c>",
+			"+<version.c>"
+		],
+		"flags": [
+			"-D__FREERTOS__",
+			"-I libswresample",
+			"-Wno-pointer-sign",
+			"-Wno-parentheses",
+			"-Wno-switch",
+			"-Wno-maybe-uninitialized"
+		]
+	}
+}

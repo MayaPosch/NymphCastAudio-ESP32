@@ -1,0 +1,14 @@
+{
+    "name": "libavdevice",
+    "version": "5.1.0",
+    "frameworks": "*",
+    "platforms": "*",
+	"build": {
+		"srcDir": "libavdevice",
+		"includeDir": ".",
+		"flags": [
+			"-D__FREERTOS__",
+			"-I libavdevice"
+		]
+	}
+}

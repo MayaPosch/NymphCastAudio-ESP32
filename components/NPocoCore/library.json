@@ -1,0 +1,30 @@
+{
+    "name": "NPocoCore",
+    "version": "1.0.0",
+    "description": "Core NPoco library.",
+    "keywords": "cross-platform",
+    "license": "BSD",
+    "frameworks": "*",
+    "platforms": "*",
+	"build": {
+		"srcDir": "src",
+		"includeDir": "include/npoco",
+		"srcFilter": [
+			"+<*.c>",
+			"+<*.cc>",
+			"+<*.cpp>",
+			"+<*.h>"
+		],
+		"unflags": [
+			"-std=gnu++11",
+			"-fno-rtti"
+		],
+		"flags": [
+			"-D__FREERTOS__",
+			"-std=gnu++14",
+			"-I include",
+			"-I include/npoco/platforms",
+			"-I include/npoco/Dynamic"
+		]
+	}
+}

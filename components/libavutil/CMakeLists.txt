@@ -1,0 +1,12 @@
+# idf_component_register(SRCS "foo.c" "bar.c"
+                       # INCLUDE_DIRS "include"
+                       # REQUIRES mbedtls)
+idf_component_register(SRCS "libavutil/adler32.c" "libavutil/aes.c" "libavutil/aes_ctr.c" "libavutil/audio_fifo.c" "libavutil/avsscanf.c" "libavutil/avstring.c" "libavutil/base64.c" "libavutil/blowfish.c" "libavutil/bprint.c" "libavutil/buffer.c" "libavutil/camellia.c" "libavutil/cast5.c" "libavutil/channel_layout.c" "libavutil/color_utils.c" "libavutil/cpu.c" "libavutil/crc.c" "libavutil/csp.c" "libavutil/des.c" "libavutil/detection_bbox.c" "libavutil/dict.c" "libavutil/display.c" "libavutil/dovi_meta.c" "libavutil/downmix_info.c" "libavutil/encryption_info.c" "libavutil/error.c" "libavutil/eval.c" "libavutil/fifo.c" "libavutil/file.c" "libavutil/file_open.c" "libavutil/film_grain_params.c" "libavutil/fixed_dsp.c" "libavutil/float_dsp.c" "libavutil/frame.c" "libavutil/hash.c" "libavutil/hdr_dynamic_metadata.c" "libavutil/hdr_dynamic_vivid_metadata.c" "libavutil/hmac.c" "libavutil/hwcontext.c" "libavutil/imgutils.c" "libavutil/integer.c" "libavutil/intmath.c" "libavutil/lfg.c" "libavutil/lls.c" "libavutil/log.c" "libavutil/log2_tab.c" "libavutil/lzo.c" "libavutil/mastering_display_metadata.c" "libavutil/mathematics.c" "libavutil/md5.c" "libavutil/mem.c" "libavutil/murmur3.c" "libavutil/opt.c" "libavutil/parseutils.c" "libavutil/pixdesc.c" "libavutil/pixelutils.c" "libavutil/random_seed.c" "libavutil/rational.c" "libavutil/rc4.c" "libavutil/reverse.c" "libavutil/ripemd.c" "libavutil/samplefmt.c" "libavutil/sha.c" "libavutil/sha512.c" "libavutil/slicethread.c" "libavutil/spherical.c" "libavutil/stereo3d.c" "libavutil/tea.c" "libavutil/threadmessage.c" "libavutil/av_time.c" "libavutil/timecode.c" "libavutil/tree.c" "libavutil/twofish.c" "libavutil/tx.c" "libavutil/tx_double.c" "libavutil/tx_float.c" "libavutil/tx_int32.c" "libavutil/utils.c" "libavutil/uuid.c" "libavutil/version.c" "libavutil/video_enc_params.c" "libavutil/xga_font_data.c" "libavutil/xtea.c"
+						INCLUDE_DIRS "." "libavutil"
+						REQUIRES libavcodec)
+						
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-format-truncation)
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-pointer-sign)
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-parentheses)
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-switch)
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wno-maybe-uninitialized)

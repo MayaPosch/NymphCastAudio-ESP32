@@ -1,0 +1,44 @@
+{
+    "name": "libavfilter",
+    "version": "5.1.0",
+    "frameworks": "*",
+    "platforms": "*",
+	"build": {
+		"srcDir": "libavfilter",
+		"includeDir": ".",
+		"srcFilter": [
+			"+<af_aformat.c>",
+			"+<af_anull.c>",
+			"+<af_aresample.c>",
+			"+<allfilters.c>",
+			"+<audio.c>",
+			"+<avfilter.c>",
+			"+<avfiltergraph.c>",
+			"+<buffersink.c>",
+			"+<buffersrc.c>",
+			"+<colorspace.c>",
+			"+<drawutils.c>",
+			"+<fifo.c>",
+			"+<formats.c>",
+			"+<framepool.c>",
+			"+<framequeue.c>",
+			"+<graphdump.c>",
+			"+<graphparser.c>",
+			"+<pthread.c>",
+			"+<setpts.c>",
+			"+<trim.c>",
+			"+<version.c>",
+			"+<vf_format.c>",
+			"+<vf_null.c>",
+			"+<video.c>"
+		],
+		"flags": [
+			"-D__FREERTOS__",
+			"-I libavfilter",
+			"-Wno-pointer-sign",
+			"-Wno-parentheses",
+			"-Wno-switch",
+			"-Wno-maybe-uninitialized"
+		]
+	}
+}
