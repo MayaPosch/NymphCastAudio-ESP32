@@ -42,7 +42,7 @@ Most development and testing has been performed using the ESP32-WROVER-E and ESP
 Image</th><th>Description</th></tr>
 <tr>
 <td width="50%"><image src="art/UDA1334A-i2s-digital-audio-breakout_778x507.jpg" height="40%"></td>
-<td>NXP UDA1334A-based I2S codec with stereo output. Board is usually found with the model ID _CMJCU-1334_ and is available from a wide variety of sources.</td>
+<td>NXP UDA1334A-based I2S codec with stereo output. Board is usually found with the model ID <i>CJMCU-1334</i> and is available from a wide variety of sources.</td>
 </table>
 
 ## Hardware Wiring ##
