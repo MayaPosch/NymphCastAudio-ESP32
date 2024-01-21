@@ -40,7 +40,8 @@ bool NymphServer::start(int port) {
 #endif
 		// Create a server socket that listens on all interfaces, IPv4 and IPv6.
 		// Assign it to the new TCPServer.
-		ss.bind6(port, true, false); // Port, SO_REUSEADDR, IPv6-only.
+		//ss.bind6(port, true, false); // Port, SO_REUSEADDR, IPv6-only.
+		ss.bind(port, true, false); // Port, SO_REUSEADDR, SO_REUSEPORT.
 		ss.listen();
 		threadpool = new Poco::ThreadPool;
 		threadpool->useExternalRAM(true);
