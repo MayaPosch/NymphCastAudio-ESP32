@@ -99,4 +99,4 @@ With the ESP32 being such a resource restricted platform, the NCA-ESP32 implemen
 
 ## Known Issues ##
 
-- **WiFi**: auto-discovery of WiFi-connected NCA-ESP32 instance by WiFi-connected client fails, but works reliably for Ethernet-connected clients.
+- No known issues.
