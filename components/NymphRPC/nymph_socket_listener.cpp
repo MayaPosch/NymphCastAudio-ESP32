@@ -66,6 +66,11 @@ void NymphSocketListener::run() {
 				NYMPH_LOG_INFORMATION("Received remote disconnected notice. Terminating listener thread.");
 				break;
 			}
+			else if (received == -1) {
+				// Received socket error. 
+				NYMPH_LOG_ERROR("Received socket error. Terminating listener thread.");
+				break;
+			}
 			else if (received < 8) {
 				// TODO: try to wait for more bytes.
 				NYMPH_LOG_WARNING("Received <8 bytes: " + NumberFormatter::format(received));
