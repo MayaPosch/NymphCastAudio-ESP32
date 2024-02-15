@@ -67,8 +67,14 @@ void NymphSocketListener::run() {
 				break;
 			}
 			else if (received == -1) {
-				// Received socket error. 
-				NYMPH_LOG_ERROR("Received socket error. Terminating listener thread.");
+				// Received socket error.
+				int err = 0;
+#if defined(_WIN32)
+				err = (int) WSAGetLastError();
+#else
+				err = (int) errno;
+#endif
+				NYMPH_LOG_ERROR("Received socket error: " + Poco::NumberFormatter::format(err) + ". Terminating listener thread.");
 				break;
 			}
 			else if (received < 8) {
