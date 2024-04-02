@@ -2,7 +2,7 @@
 
 This repository contains the source code for the firmware of NymphCast Audio, targeting the ESP32 platform as supported by the Espressif ESP-IDF SDK. 
 
-[NymphCast](https://github.com/MayaPosch/NymphCast) is a multi-platform visual-audio streaming system that allows anyone to stream local multimedia content from NymphCast media servers and clients to receivers (NymphCast Server). NymphCast Audio is one such receiver, with as difference that it does not support video output.
+[NymphCast](https://github.com/MayaPosch/NymphCast) is a multi-platform audio-visual streaming system that allows anyone to stream local multimedia content from NymphCast media servers and clients to receivers (NymphCast Server). NymphCast Audio is one such receiver, with as difference that it does not support video output.
 
 The NymphCast Audio - ESP32 (NCA-ESP32) project is an implementation of NymphCast Audio on the Espressif ESP32 platform, offering the following features:
 
