@@ -46,7 +46,7 @@ Hardware characteristics & requirements:
 
 | Image | Type | Description |
 |--- | --- | --- |
-|![ESP32-S3-WROOM-1 & 2](art/ESP32-S3-WROOM-1 S_0.png)| Espressif ESP32-S3-WROOM-1 & 2 | ESP32-S3 modules with at least 8 MB of octal SPI PSRAM and 4 MB of Flash. Includes the WROOM-1/1U/2 variants. |
+|![ESP32-S3-WROOM-1 & 2](art/ESP32-S3-WROOM-1_S_0.png)| Espressif ESP32-S3-WROOM-1 & 2 | ESP32-S3 modules with at least 8 MB of octal SPI PSRAM and 4 MB of Flash. Includes the WROOM-1/1U/2 variants. |
 |![ESP-WROVER-E](art/ESP32-WROVER-E.png)| Espressif ESP32-WROVER-E module | 4 MB Flash, 8 MB PSRAM. Has v3 silicon, with PSRAM cache and other bugs fixed. The ESP32-WROVER-IE variant has an external antenna. Found on the official ESP32-DevkitC V4 boards, the Freenove ESP32-WROVER-DEV and other boards. |
 |![](art/ESP32-WROVER-B.jpg)| Espressif ESP32-WROVER-B module | Has 4 MB Flash, 8 MB PSRAM, with v2 silicon. Requires PSRAM cache workaround. The ESP32-WROVER-IB variant has an external antenna. Found on older Espressif development boards and third-party boards. |
 
