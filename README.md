@@ -12,7 +12,10 @@ The NymphCast Audio - ESP32 (NCA-ESP32) project is an implementation of NymphCas
 
 ## Reference Design ##
 
-The reference NCA-ESP32 design consists out of the ESP32-S3-WROOM-1 module with UDA1334A audio codec.
+The reference NCA-ESP32 design consists out of the ESP32-S3-WROOM-1 module with UDA1334A audio codec:
+
+![NymphCast Audio ESP32-S3 reference design](art/nymphcast_audio_esp32-s3_reference_setup.jpg)
+
 <!--The reference NCA-ESP32 design is an easy to assemble hardware design. It includes:
 
 - a 3D printable enclosure.
