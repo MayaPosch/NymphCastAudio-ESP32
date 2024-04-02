@@ -10,19 +10,32 @@ The NymphCast Audio - ESP32 (NCA-ESP32) project is an implementation of NymphCas
 - Streaming of most audio and video formats (audio track only).
 - Playback of online (RTSP) streams and similar.
 
+## Reference Design ##
+
+The reference NCA-ESP32 design consists out of the ESP32-S3-WROOM-1 module with UDA1334A audio codec.
+<!--The reference NCA-ESP32 design is an easy to assemble hardware design. It includes:
+
+- a 3D printable enclosure.
+- ESP32 development board (Espressif DevKitC V4 compatible).
+- UDA1334A board (CJMCU-1334).-->
+
+<!--For more details, see its [separate document](reference_design/reference_design.md).-->
+
 ## Compatible Hardware ##
 
 Hardware characteristics & requirements:
 
 - 4+ MB Flash
 - 4 MB PSRAM
-- ESP32 (dual-core, 240 MHz, or equivalent derivative).
+- ESP32-S3 (recommended, modules using octal PSRAM like N16R8)
+- ESP32 (not recommended due to slow PSRAM)
 - I2S audio codec like the UDA1334A.
 
 **Supported boards:**
 
 | Image | Type | Description |
 |--- | --- | --- |
+|![ESP32-S3-DevKitC-1](art/esp32-s3-devkitc-1-v1.1-isometric.png)| ESP32-S3-DevKitC-1 | Official [Espressif ESP32-S3](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/hw-reference/esp32s3/user-guide-devkitc-1.html) board. Budget alternative is the [YD-ESP32-S3](https://github.com/vcc-gnd/YD-ESP32-S3) board in N8R8 or N16R8 configuration. |
 |![ESP32-DevkitC v4 WROVER-E](art/esp32-devkitc_v4_wrover-e.jpg)| ESP32-DevKitC V4 - ESP32-WROVER-E | Version of the official [Espressif ESP32-DevKitC V4](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32/get-started-devkitc.html) with ESP32-WROVER-E module (see modules section). |
 |![ESP32-WROVER-DEV](art/esp32-wrover-dev.jpg)| ESP32-WROVER-DEV | Originally produced by [Freenove](https://github.com/Freenove/Freenove_ESP32_WROVER_Board). Very similar to the ESP32-DevKitC V4 (above), but with one extra GND and 5V pin, as well as a camera module. Uses same ESP32-WROVER-E module (see modules section). |
 
@@ -30,7 +43,8 @@ Hardware characteristics & requirements:
 
 | Image | Type | Description |
 |--- | --- | --- |
-|![ESP-WROVER-E](art/ESP32-WROVER-E.png)| Espressif ESP32-WROVER-E module. | 4 MB Flash, 8 MB PSRAM. Has v3 silicon, with PSRAM cache and other bugs fixed. The ESP32-WROVER-IE variant has an external antenna. Found on the official ESP32-DevkitC V4 boards, the Freenove ESP32-WROVER-DEV and other boards. |
+|![ESP32-S3-WROOM-1 & 2](art/ESP32-S3-WROOM-1 S_0.png)| Espressif ESP32-S3-WROOM-1 & 2 | ESP32-S3 modules with at least 8 MB of octal SPI PSRAM and 4 MB of Flash. Includes the WROOM-1/1U/2 variants. |
+|![ESP-WROVER-E](art/ESP32-WROVER-E.png)| Espressif ESP32-WROVER-E module | 4 MB Flash, 8 MB PSRAM. Has v3 silicon, with PSRAM cache and other bugs fixed. The ESP32-WROVER-IE variant has an external antenna. Found on the official ESP32-DevkitC V4 boards, the Freenove ESP32-WROVER-DEV and other boards. |
 |![](art/ESP32-WROVER-B.jpg)| Espressif ESP32-WROVER-B module | Has 4 MB Flash, 8 MB PSRAM, with v2 silicon. Requires PSRAM cache workaround. The ESP32-WROVER-IB variant has an external antenna. Found on older Espressif development boards and third-party boards. |
 
 Most development and testing has been performed using the ESP32-WROVER-E and ESP32-WROVER-B modules, specifically the Freenove ESP32-WROVER-DEV (WROVER-E) board, which is almost identical to the official [Espressif ESP32-DevKitC V4](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32/get-started-devkitc.html) development board with ESP32-WROVER-E module.
@@ -55,17 +69,34 @@ Based on an I2S codec like the UDA1334A with its three-wire I2S interface, these
 |WSEL	| 15|
 |DATA	| 13|
 
+Naturally, Vin on the audio board should be wired up to (usually) 3.3V and GND to ground. Check with the documentation for your I2S device if not using the UDA1334A.
+
 ## ESP-IDF Project ##
 
 As an ESP-IDF 5.x project, its requirements for building the firmware include only a recent copy of ESP-IDF 5.x from Espressif.
 
-Following this, use the ESP-IDF shell or local equivalent to navigate to the top folder of the NCA-ESP32 project after cloning or downloading it to a local folder.
+Following this, use the ESP-IDF shell or local equivalent to navigate to the top folder of the NCA-ESP32 project after cloning or downloading it.
 
-Here the WiFi credentials should be updated in the `wifi_stuff.h` header file (creating this file from the provided template as needed) so that the new NCA-ESP32 device can connect to the local WiFi network.
+In the project root directory the WiFi credentials should be configured in the `wifi_stuff.h` header file (creating this file from the provided template as needed) so that the new NCA-ESP32 device can connect to the local WiFi network.
 
-In the top folder, create a new folder `build` and navigate into it, before executing `cmake .. -G "Ninja"`. This will create the build files separate from the project files. 
+In the top folder, create a new folder `build` and navigate into it:
 
-After running `ninja`, the project should successfully build and can be flashed to a connected (and compatible) ESP32 module with `ninja flash`.
+```
+mkdir build
+cd build
+```
+
+Next execute `cmake .. -G Ninja`. This will create the build files separate from the project files. If building for ESP32-S3, use the following command:
+
+```
+cmake .. -DIDF_TARGET=esp32s3 -G Ninja
+```
+
+After running `ninja`, the project should successfully build and can be flashed to a connected (and compatible) ESP32 module with:
+
+```
+ninja flash
+```
 
 ## Project Details ##
 
