@@ -37,6 +37,7 @@
 #include "ffplay/ffplay.h"
 #include "ffplay/types.h"
 #include "ffplay/sdl_renderer.h"
+#include "ffplay/stream_handler.h"
 #include <nyansd.h>
 
 #include <map>

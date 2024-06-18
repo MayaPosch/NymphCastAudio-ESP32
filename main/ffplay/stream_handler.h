@@ -19,14 +19,6 @@ class StreamHandler {
 	
 	static void read_thread(void *arg);
 	
-	static void setPosition(double p);
-	static double getPosition() { return file_meta.position; }
-	static uint64_t getDuration() { return file_meta.duration; }
-	static void setDuration(uint64_t d) { file_meta.setDuration(d); }
-	static std::string getTitle() { return file_meta.getTitle(); }
-	static std::string getArtist() { return file_meta.getArtist(); }
-	static std::string getAlbum() { return file_meta.getAlbum(); }
-	
 public:
 	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, AVFormatContext* context);
 	static int stream_component_open(VideoState *is, int stream_index);
@@ -39,6 +31,17 @@ public:
 #if CONFIG_AVFILTER
 	static int opt_add_vfilter(void *optctx, const char *opt, const char *arg);
 #endif
+	
+	static void setPosition(double p);
+	static double getPosition() { return file_meta.position; }
+	static uint64_t getDuration() { return file_meta.duration; }
+	static void setDuration(uint64_t d) { file_meta.setDuration(d); }
+	static void setTitle(std::string t) { file_meta.setTitle(t); }
+	static std::string getTitle() { return file_meta.getTitle(); }
+	static void setArtist(std::string a) { file_meta.setArtist(a); }
+	static std::string getArtist() { return file_meta.getArtist(); }
+	static void setAlbum(std::string a) { file_meta.setAlbum(a); }
+	static std::string getAlbum() { return file_meta.getAlbum(); }
 	
 	static void quit();
 };
