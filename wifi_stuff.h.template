@@ -1,4 +1,16 @@
+// This is the template for the WiFi & host name configuration for NymphCast Audio.
+// WiFi details (SSID & password) as well as host name can be either provided here or after first
+// boot by connecting to the serial port on the ESP32-S3 module (via the USB port).
+// Serial connection details: 115200 baud, 8N1.
+
+// If using the serial port method (and the shell provided), make sure all defines in 
+// the 'wifi_stuff.h' header (based on this template) are commented out.
+// The serial interface also becomes available when connecting to the WiFi fails. After entering 
+// details via the serial interface, these are saved in NVS for later recall.
 
 // Set to current AP SSID & PWD
 #define ESP_WIFI_SSID	  "WiFi_SSID_here"
 #define ESP_WIFI_PASS	  "WiFi_password_here"
+
+// Set to the desired host name.
+#define ESP_HOST_NAME	"NCA-ESP32-S3"

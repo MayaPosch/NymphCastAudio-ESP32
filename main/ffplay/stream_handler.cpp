@@ -9,7 +9,6 @@
 #include "video_renderer.h"
 #include "sdl_renderer.h"
 #include "player.h"
-#include "ffplay.h"
 #include "../databuffer.h"
 #include <cinttypes>
 
@@ -35,6 +34,15 @@ uint32_t profcount = 0;
 std::atomic_bool StreamHandler::run;
 std::atomic<bool> StreamHandler::eof;
 std::string StreamHandler::loggerName = "StreamHandler";
+FileMetaInfo StreamHandler::file_meta;
+
+
+// --- SET POSITION ---
+void StreamHandler::setPosition(double p) {
+	if (std::isnan(p)) { file_meta.position = 0; }
+	else { file_meta.position = p; }
+}
+
 
 AVDictionary *sws_dict;
 AVDictionary *swr_opts;
@@ -863,20 +871,25 @@ void StreamHandler::read_thread(void *arg) {
 	
 	
 	// Set new title after clearing it.
-	file_meta.setTitle("");
+	//file_meta.setTitle("");
+	setTitle("");
 	if ((t = av_dict_get(ic->metadata, "title", NULL, 0))) {
-		file_meta.setTitle(t->value);
+		//file_meta.setTitle(t->value);
+		setTitle(t->value);
 	}
 
 	file_meta.setArtist(""); // clear old artist.
     if ((t = av_dict_get(ic->metadata, "author", NULL, 0))) {
-		file_meta.setArtist(t->value);
+		//file_meta.setArtist(t->value);
+		setArtist(t->value);
 	}
     else if ((t = av_dict_get(ic->metadata, "artist", NULL, 0))) {
-		file_meta.setArtist(t->value);
+		//file_meta.setArtist(t->value);
+		setArtist(t->value);
 	}
 	
-	file_meta.setDuration(is->ic->duration / AV_TIME_BASE); // Convert to seconds.
+	//file_meta.setDuration(is->ic->duration / AV_TIME_BASE); // Convert to seconds.
+	setDuration(is->ic->duration / AV_TIME_BASE); // Convert to seconds.
 	
 	// Update clients with status.
 	sendGlobalStatusUpdate();

@@ -24,6 +24,7 @@
 
 #include "clock.h"
 
+extern std::string hostName;
 
 std::queue<SDL_Event> sdl_events;
 
@@ -429,8 +430,9 @@ void sws_freeContext(struct SwsContext *swsContext) {
 
 // FIXME: another hack due to undefined reference error on ESP-IDF.
 int gethostname(char *name, size_t len) {
-	//
-	strncpy(name, "NCA-ESP32", len - 1);
+	// TODO: Get ESP-IDF specific identifier (MAC).
+	//strncpy(name, "NCA-ESP32", len - 1);
+	strncpy(name, hostName.c_str(), len - 1);
 	if (len > 9) {
 		name[9] = '\0';
 	}

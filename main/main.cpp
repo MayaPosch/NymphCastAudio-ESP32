@@ -25,6 +25,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "nvs.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -89,6 +90,20 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 }
 
 
+// --- WiFi & hostname globals.
+// Set host name to the default value from the wifi_stuff header, if set.
+// This will be updated with the name from NVS on boot, if present.
+#ifdef ESP_WIFI_SSID
+std::string hostName 	= ESP_HOST_NAME;
+std::string wifi_ssid 	= ESP_WIFI_SSID;
+std::string wifi_pass	= ESP_WIFI_PASS;
+#else
+std::string hostName;
+std::string wifi_ssid;
+std::string wifi_pass;
+#endif
+
+
 bool wifi_init_sta() {
 	s_wifi_event_group = xEventGroupCreate();
 
@@ -113,10 +128,16 @@ bool wifi_init_sta() {
 														NULL,
 														&instance_got_ip));
 
-	wifi_config_t wifi_config = {
-		.sta = {
-			/*.ssid =*/ ESP_WIFI_SSID,
-			/*.password =*/ ESP_WIFI_PASS,
+	wifi_config_t wifi_config = { }; // zero initialise.
+	strncpy((char*) wifi_config.sta.ssid, (const char*) wifi_ssid.c_str(), 
+																	(size_t) wifi_ssid.size());
+	strncpy((char*) wifi_config.sta.password, (const char*) wifi_pass.c_str(), 
+																	(size_t) wifi_pass.size());
+	
+	//wifi_config_t wifi_config = {
+		//.sta = {
+			//.ssid = ESP_WIFI_SSID,
+			//.password = ESP_WIFI_PASS,
 			/* Authmode threshold resets to WPA2 as default if password matches WPA2 standards (pasword len => 8).
 			 * If you want to connect the device to deprecated WEP/WPA networks, Please set the threshold value
 			 * to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set the password with length and format matching to
@@ -124,8 +145,8 @@ bool wifi_init_sta() {
 			 */
 			/*.threshold.authmode = ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD,*/
 			/*.sae_pwe_h2e = WPA3_SAE_PWE_BOTH,*/
-		},
-	};
+		//},
+	//};
 	
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
@@ -351,27 +372,30 @@ std::map<std::string, NymphPair>* getPlaybackStatus() {
 		key = new std::string("duration");
 		pair.key = new NymphType(key, true);
 		//pair.value = new NymphType(FileMetaInfo::getDuration());
-		pair.value = new NymphType(file_meta.getDuration());
+		//pair.value = new NymphType(file_meta.getDuration());
+		pair.value = new NymphType(StreamHandler::getDuration());
 		pairs->insert(std::pair<std::string, NymphPair>(*key, pair));
 		
 		key = new std::string("position");
 		pair.key = new NymphType(key, true);
 		//pair.value = new NymphType(FileMetaInfo::getPosition());
 		//pair.value = new NymphType(file_meta.getPosition());
-		pair.value = new NymphType(file_meta.position);
+		pair.value = new NymphType(StreamHandler::getPosition());
 		pairs->insert(std::pair<std::string, NymphPair>(*key, pair));
 		
 		key = new std::string("title");
 		pair.key = new NymphType(key, true);
 		//std::string* val = new std::string(FileMetaInfo::getTitle());
-		std::string* val = new std::string(file_meta.getTitle());
+		//std::string* val = new std::string(file_meta.getTitle());
+		std::string* val = new std::string(StreamHandler::getTitle());
 		pair.value = new NymphType(val, true);
 		pairs->insert(std::pair<std::string, NymphPair>(*key, pair));
 		
 		key = new std::string("artist");
 		pair.key = new NymphType(key, true);
 		//val = new std::string(FileMetaInfo::getArtist());
-		val = new std::string(file_meta.getArtist());
+		//val = new std::string(file_meta.getArtist());
+		val = new std::string(StreamHandler::getArtist());
 		pair.value = new NymphType(val, true);
 		pairs->insert(std::pair<std::string, NymphPair>(*key, pair));
 		
@@ -1726,17 +1750,84 @@ void app_main() {
 	
 	ESP_ERROR_CHECK(ret);
 	
-	// Disable Bluetooth.
-	/* esp_bluedroid_disable();
-    esp_bluedroid_deinit();
-    esp_bt_controller_disable();
-    esp_bt_controller_deinit();
-    esp_bt_mem_release(ESP_BT_MODE_BTDM); */
+	// Open the WiFi namespace.
+	nvs_handle_t nvs_handle;
+	esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+	if (err != ESP_OK) {
+		printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
+	}
+	
+	// Check NVS for WiFi SSID & password, as well as host name.
+	bool nvs_saved = true;
+	size_t required_size;
+	err = nvs_get_str(nvs_handle, "wifi_ssid", NULL, &required_size);
+	switch (err) {
+		case ESP_OK: {
+			char* ssid = (char*) malloc(required_size);
+			nvs_get_str(nvs_handle, "wifi_ssid", ssid, &required_size);
+			wifi_ssid = std::string(ssid, required_size);
+			free(ssid);
+			break;
+		}
+		case ESP_ERR_NVS_NOT_FOUND: {
+			// No SSID set, save to NVS later.
+			nvs_saved = false;
+			break;
+		}
+		default :
+			printf("Error (%s) reading!\n", esp_err_to_name(err));
+	}
+	
+	err = nvs_get_str(nvs_handle, "wifi_pass", NULL, &required_size);
+	switch (err) {
+		case ESP_OK: {
+			char* pass = (char*) malloc(required_size);
+			nvs_get_str(nvs_handle, "wifi_pass", pass, &required_size);
+			wifi_pass = std::string(pass, required_size);
+			free(pass);
+			break;
+		}
+		case ESP_ERR_NVS_NOT_FOUND: {
+			// No password set, save to NVS later.
+			nvs_saved = false;
+			break;
+		}
+		default :
+			printf("Error (%s) reading!\n", esp_err_to_name(err));
+	}
+	
+	err = nvs_get_str(nvs_handle, "hostname", NULL, &required_size);
+	switch (err) {
+		case ESP_OK: {
+			char* name = (char*) malloc(required_size);
+			nvs_get_str(nvs_handle, "hostname", name, &required_size);
+			hostName = std::string(name, required_size);
+			free(name);
+			break;
+		}
+		case ESP_ERR_NVS_NOT_FOUND:{
+			// No hostname set, save to NVS later.
+			nvs_saved = false;
+			break;
+		}
+		default :
+			printf("Error (%s) reading!\n", esp_err_to_name(err));
+	}
+	
+	// Start the console module. If no WiFi details were defined or found in NVS, skip connecting.
+	// TODO:
+	
 
 	// Set up WiFi.
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
 	if (!wifi_init_sta()) {
 		ESP_LOGE(TAG, "");
+		
+		// Connecting to WiFi failed, wait for user to connect to interactive shell.
+		// This allows for the user to set the WiFi details & host name before retrying.
+		// TODO:
+		
+		
 		return;
 	}
 #else

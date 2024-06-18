@@ -60,6 +60,7 @@ PooledThread::PooledThread(const std::string& name, int stackSize, bool extRAM):
 {
 	poco_assert_dbg (stackSize >= 0);
 	_thread.setStackSize(stackSize);
+	_thread.setName("pool_thread");
 	if (_extRAM) {
 		_thread.useExternalRAM(true);
 	}

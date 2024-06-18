@@ -122,6 +122,7 @@ int DecoderC::decoder_start(Decoder *d, void (*fn)(void *), const char *thread_n
 	//d->decoder_tid->setStackSize(12288); // 12 kB.
 	//d->decoder_tid->setStackSize(18432); // 18 kB.
 	d->decoder_tid->setStackSize(20480); 	// 20 kB.
+	//d->decoder_tid->setStackSize(25600); 	// 25 kB.
 	//d->decoder_tid->useExternalRAM(true); // Use external RAM for stack.
 #endif
 	d->decoder_tid->start(fn, arg);

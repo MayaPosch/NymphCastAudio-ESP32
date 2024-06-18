@@ -243,8 +243,8 @@ void Ffplay::run() {
 	//parse_options(NULL, argc, argv.data(), options, opt_input_file);
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	//av_log_set_level(AV_LOG_TRACE);
-	//av_log_set_level(AV_LOG_INFO);
-	av_log_set_level(AV_LOG_WARNING);
+	av_log_set_level(AV_LOG_INFO);
+	//av_log_set_level(AV_LOG_WARNING);
 	
 	// Start main loop.
 	// This loop waits until it is triggered, at which point there should either be a URL to
@@ -360,9 +360,11 @@ void Ffplay::run() {
 		
 		// Clear file meta info.
 		//FileMetaInfo::setPosition(0.0);
-		file_meta.setPosition(0.0);
+		//file_meta.setPosition(0.0);
+		StreamHandler::setPosition(0.0);
 		//FileMetaInfo::setDuration(0);
-		file_meta.setDuration(0);
+		//file_meta.setDuration(0);
+		StreamHandler::setDuration(0);
 		
 		if (ioContext) {
 			av_freep(&ioContext->buffer);

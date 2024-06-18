@@ -83,7 +83,7 @@ bool NymphListener::addConnection(int handle, NymphSocket socket) {
 	long timeout = 1000; // 1 second
 	mtx->lock();
 	NymphSocketListener* esl = new NymphSocketListener(socket, cnd, mtx);
-	Poco::Thread* thread = new Poco::Thread;
+	Poco::Thread* thread = new Poco::Thread("nymph_listener");
 	thread->start(*esl);
 	if (!cnd->tryWait(*mtx, timeout)) {
 		// Handle listener timeout.

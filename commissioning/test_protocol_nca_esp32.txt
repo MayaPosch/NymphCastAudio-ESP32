@@ -1,0 +1,64 @@
+NymphCast Audio - ESP32
+
+Test protocol
+
+---
+
+Commissioning the NCA-ESP32 project requires it to pass a number of tests, which are defined in this document.
+
+Test setup: Wired (Ethernet) on NC client system, ESP32-S3 connected via WiFi (same subnet).
+
+---
+
+== T0. Playback ==
+
+> T0.1. Media from NC client
+
+1. Playback of varied audio formats at max bitrate: 
+	1. MP3 	=> Works so far.
+	2. WAV	=> Filter buffer issue in log fixed with CONFIG_AVFILTER=1 in simulator. Broken on HW.
+	3. OGG	=> System crash with all files tested. => Enabled MDCT in FFmpeg, works in sim & HW.
+	4. FLAC	=> Seems to work. Track position stays at 0:00 in client => Works in simulator.
+	5. APE	=> ?
+	6. WMA	=> System crash like with Ogg. => Enabled MDCT in FFmpeg, works in sim. HW: ?
+	7. AAC	=> ?
+	
+Notes:
+	- Simulator is the WalkFox Sim, with local read-out of meta data & position info.
+	- Position keeps getting reset to 0:00 by NCA update in client with OGG & FLAC.
+	- WAV gives the abuffersink error in log, then playback hangs until stopped.
+
+2. Playback of various video formats (video & audio streams, audio-only output):
+	1. MKV
+	2. AVI
+	3. WEBM (MKV derivative).
+	4. MP4
+	5.
+	
+> T0.2. Streaming from URL.
+	1. Streaming of common stream formats (RTSP).
+		=> https://www.internet-radio.com/stations/jpop/
+		=> https://www.internet-radio.com/servers/tools/playlistgenerator/?u=https://kathy.torontocast.com:3560/listen.pls?sid=1&t=.m3u
+	
+Criteria:
+	1. Smooth playback, no audio artefacts.
+	2. Ability to pause, resume and stop without glitches or artefacts.
+	
+	
+== T1. Multi-room ==
+
+1. Connect to multiple NCA-ESP32 instances.
+2. Play back media formats as per T0.1.1 & T0.1.2 with T0.1 criteria.
+3. Use 1+ NCA-ESP32 as slaves with a non-NCA-ESP32 NymphCast server as master:
+	a. With regular playback.
+	b. With NymphCast Apps.
+
+Additional criteria:
+	1. Synchronisation between the different NCA-ESP32 instances.
+	
+	
+--- General Remarks ---
+
+1. Some crackling on boot: add usage of Mute pin to hardware design.
+2. 
+

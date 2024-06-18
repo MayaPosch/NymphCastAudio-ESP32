@@ -40,7 +40,7 @@ std::mutex NyanSD::servicesMutex;
 std::atomic<bool> NyanSD::running{false};
 //std::thread NyanSD::handler;
 //pthread_t NyanSD::handler;
-Poco::Thread NyanSD::handler;
+Poco::Thread NyanSD::handler("nyansd");
 //ByteBauble NyanSD::bb;
 
 
