@@ -81,7 +81,7 @@ struct FileMetaInfo {
 
 
 // --- Globals ---
-extern FileMetaInfo file_meta;
+//extern FileMetaInfo file_meta;
 	
 void finishPlayback(); 			// Defined in NymphCastServer.cpp
 void sendGlobalStatusUpdate();	// Defined in NymphCastServer.cpp

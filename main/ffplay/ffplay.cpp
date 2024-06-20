@@ -20,7 +20,7 @@
 /* current context */
 int is_full_screen;
 int64_t audio_callback_time;
-FileMetaInfo file_meta;
+//FileMetaInfo file_meta;
 
 unsigned sws_flags = SWS_BICUBIC;
 

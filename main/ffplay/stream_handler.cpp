@@ -39,8 +39,8 @@ FileMetaInfo StreamHandler::file_meta;
 
 // --- SET POSITION ---
 void StreamHandler::setPosition(double p) {
-	if (std::isnan(p)) { file_meta.position = 0; }
-	else { file_meta.position = p; }
+	if (std::isnan(p)) { file_meta.setPosition(0); }
+	else { file_meta.setPosition(p); }
 }
 
 
