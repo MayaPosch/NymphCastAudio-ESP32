@@ -114,6 +114,9 @@ void SdlRenderer::run_event_loop(void* arg) {
 		if (playerEventsActive) {
 			// Pass through player processor.
 			Player::process_event(event);
+			
+			// Trigger player refresh.
+			Player::run_updates();
 		}
 		
 		// Wait for 10 ms.
