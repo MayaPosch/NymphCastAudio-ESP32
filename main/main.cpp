@@ -2204,7 +2204,8 @@ int main() {
 	// Start SDL event loop in separate threan on ESP32.
 	NYMPH_LOG_INFORMATION("Starting SDL event loop...");
 #ifdef ESP_PLATFORM
-	sdlThread.setStackSize(1024);	// 1 kB
+	//sdlThread.setStackSize(1024);	// 1 kB
+	sdlThread.setStackSize(7168);	// 7 kB
 	sdlThread.start(SdlRenderer::run_event_loop);
 #else
 	SdlRenderer::run_event_loop();
