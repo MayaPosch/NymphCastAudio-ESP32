@@ -108,13 +108,13 @@ void SdlRenderer::run_event_loop(void* arg) {
 	const TickType_t xDelay = 10 / portTICK_PERIOD_MS;
 	while (run_events) {
 		while (SDL_PollEvent(&event)) {
-			// FIXME: skip?
+			if (playerEventsActive) {
+				// Pass through player processor.
+				Player::process_event(event);
+			}
 		}
 			
 		if (playerEventsActive) {
-			// Pass through player processor.
-			Player::process_event(event);
-			
 			// Trigger player refresh.
 			Player::run_updates();
 		}
