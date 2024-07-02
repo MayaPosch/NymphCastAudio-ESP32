@@ -258,7 +258,8 @@ int SdlRenderer::audio_open(void *opaque, int64_t wanted_channel_layout, int wan
 	// ESP-IDF 4.4.x version.
 	i2s_config_t i2s_config;// = {
         i2s_config.mode = (i2s_mode_t) (I2S_MODE_MASTER | I2S_MODE_TX); //,              /* only TX */
-        i2s_config.sample_rate = 44100; //,
+        //i2s_config.sample_rate = 44100; //,
+        i2s_config.sample_rate = wanted_sample_rate; //,
         i2s_config.bits_per_sample = (i2s_bits_per_sample_t) 16; //,
         i2s_config.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT; //,       /* 2-channels */
         i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S; //,
