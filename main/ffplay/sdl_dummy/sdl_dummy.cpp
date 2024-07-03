@@ -321,7 +321,8 @@ int SdlRenderer::audio_open(void *opaque, int64_t wanted_channel_layout, int wan
 	}
 	
 	audio_hw_params->fmt = AV_SAMPLE_FMT_S16;
-    audio_hw_params->freq = 44100; //spec.freq;
+    //audio_hw_params->freq = 44100; //spec.freq;
+    audio_hw_params->freq = i2s_config.sample_rate;
     audio_hw_params->channel_layout = wanted_channel_layout;
     audio_hw_params->channels = wanted_nb_channels; // spec.channels;
     audio_hw_params->frame_size = av_samples_get_buffer_size(NULL, audio_hw_params->channels, 1, audio_hw_params->fmt, 1);
