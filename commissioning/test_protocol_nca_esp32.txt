@@ -15,18 +15,21 @@ Test setup: Wired (Ethernet) on NC client system, ESP32-S3 connected via WiFi (s
 > T0.1. Media from NC client
 
 1. Playback of varied audio formats at max bitrate: 
-	1. MP3 	=> Works so far.
-	2. WAV	=> Filter buffer issue in log fixed with CONFIG_AVFILTER=1 in simulator. Broken on HW.
-	3. OGG	=> System crash with all files tested. => Enabled MDCT in FFmpeg, works in sim & HW.
-	4. FLAC	=> Seems to work. Track position stays at 0:00 in client => Works in simulator.
-	5. APE	=> ?
+	1. MP3 	=> Works.
+	2. WAV	=> Filter buffer issue in log fixed with CONFIG_AVFILTER=1 in simulator. Works on HW.
+	3. OGG	=> System crash => Enabled MDCT in FFmpeg, works in sim & HW.
+	4. FLAC	=> Works => Works in simulator & HW.
+	5. APE	=> Works.
 	6. WMA	=> System crash like with Ogg. => Enabled MDCT in FFmpeg, works in sim. HW: ?
-	7. AAC	=> ?
+	7. AAC	=> Works.
 	
 Notes:
 	- Simulator is the WalkFox Sim, with local read-out of meta data & position info.
 	- Position keeps getting reset to 0:00 by NCA update in client with OGG & FLAC.
+		=> Fixed by calling video refresh function.
 	- WAV gives the abuffersink error in log, then playback hangs until stopped.
+	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
+		=> Fixed in sdl_dummy: return correct sample rate to player.
 
 2. Playback of various video formats (video & audio streams, audio-only output):
 	1. MKV
@@ -37,8 +40,20 @@ Notes:
 	
 > T0.2. Streaming from URL.
 	1. Streaming of common stream formats (RTSP).
+		=> System crash. No log yet.
+	
+		Test URLs:
+		=> http://fmstream.org/index.php?l=ja
 		=> https://www.internet-radio.com/stations/jpop/
 		=> https://www.internet-radio.com/servers/tools/playlistgenerator/?u=https://kathy.torontocast.com:3560/listen.pls?sid=1&t=.m3u
+		=> https://kathy.torontocast.com:3560/listen.pls (Japanese pop)
+		=> https://as-hls-ww.live.cf.md.bbci.co.uk/pool_904/live/ww/bbc_radio_one/bbc_radio_one.isml/bbc_radio_one-audio%3d96000.norewind.m3u8
+		http://open.live.bbc.co.uk/mediaselector/5/select/mediaset/http-icy-mp3-a/format/pls/proto/http/vpid/bbc_world_service.pls
+		=> https://mtist.as.smartstream.ne.jp/30006/livestream/playlist.m3u8 (Japanese)
+		=> https://radio-stream.nhk.jp/hls/live/2023508/nhkradirubkr1/master.m3u8 (?)
+		=> https://a.files.bbci.co.uk/ms6/live/3441A116-B12E-4D2F-ACA8-C1984642FA4B/audio/simulcast/dash/nonuk/pc_hd_abr_v2/cfs/bbc_world_service.mpd
+		=> http://150.95.174.29:8000/by_the_sea (Shonan beach FM)
+		=> https://edition.cnn.com/audio/api/tunein/v1/media/s292162 (X)
 	
 Criteria:
 	1. Smooth playback, no audio artefacts.

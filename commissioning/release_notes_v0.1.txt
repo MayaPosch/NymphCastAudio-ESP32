@@ -1,0 +1,33 @@
+Release Notes for NymphCast Audio - ESP32
+
+Version: v0.1
+
+---
+
+These are the release notes for the first release of the NymphCast Audio - ESP32 (NCA-ESP32) project.
+
+Scope of the project is the firmware (based on the ESP-IDF framework), and a reference hardware design. Contained with the release targets are the stable features, as well as some experimental ones. These are documented separately.
+
+---
+
+> Reference hardware:
+
+- ESP32-S3 (N8R16 configuration).
+- UDA1334A I2S audio codec.
+
+
+---
+
+> Target stable features:
+
+- Playback of all audio formats supported by FFmpeg. (See test protocol).
+- Playback of live streams (e.g. RTSP) supported by FFmpeg. (See test protocol).
+- Multi-room connection & playback. (See test protocol).
+- Serial-based setup & configuration.
+
+
+---
+
+> Experimental:
+
+- Playback of video formats (audio streams only).
