@@ -320,8 +320,14 @@ int SdlRenderer::audio_open(void *opaque, int64_t wanted_channel_layout, int wan
 		return -1;
 	}
 	
+	// Note: experimental if section.
+	if (!wanted_channel_layout || wanted_nb_channels != av_get_channel_layout_nb_channels(wanted_channel_layout)) {
+		wanted_channel_layout = av_get_default_channel_layout(wanted_nb_channels);
+		wanted_channel_layout &= ~AV_CH_LAYOUT_STEREO_DOWNMIX;
+	}
+	// -- End experimental.
+	
 	audio_hw_params->fmt = AV_SAMPLE_FMT_S16;
-    //audio_hw_params->freq = 44100; //spec.freq;
     audio_hw_params->freq = i2s_config.sample_rate;
     audio_hw_params->channel_layout = wanted_channel_layout;
     audio_hw_params->channels = wanted_nb_channels; // spec.channels;
