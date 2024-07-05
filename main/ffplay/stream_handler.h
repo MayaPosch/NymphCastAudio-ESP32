@@ -17,6 +17,8 @@ class StreamHandler {
 	static std::atomic<bool> eof;
 	static FileMetaInfo file_meta;
 	
+	static std::atomic<bool> fault;
+	
 	static void read_thread(void *arg);
 	
 public:
@@ -42,6 +44,9 @@ public:
 	static std::string getArtist() { return file_meta.getArtist(); }
 	static void setAlbum(std::string a) { file_meta.setAlbum(a); }
 	static std::string getAlbum() { return file_meta.getAlbum(); }
+	
+	static bool get_fault() { return fault.load(); }
+	static void clear_fault() { fault = false; }
 	
 	static void quit();
 };

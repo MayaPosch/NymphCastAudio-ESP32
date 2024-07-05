@@ -36,6 +36,8 @@ std::atomic<bool> StreamHandler::eof;
 std::string StreamHandler::loggerName = "StreamHandler";
 FileMetaInfo StreamHandler::file_meta;
 
+std::atomic<bool> StreamHandler::fault = { false };
+
 
 // --- SET POSITION ---
 void StreamHandler::setPosition(double p) {
@@ -1084,7 +1086,14 @@ fail:
 	// Disable player events.
 	SdlRenderer::playerEvents(false);
 	
-	if (ic && !is->ic) {
+	if (ret == -1) {
+		// Opening stream failed. Context will have been deleted already, so safe exit.
+		fault = true;
+		av_log(NULL, AV_LOG_WARNING, "Opening stream failed. Safe exit...\n");
+		av_free(is);
+		is = 0;
+	}
+	else if (ic && !is->ic) {
 		av_log(NULL, AV_LOG_INFO, "Goto 'fail': avformat_close_input()...\n");
 		avformat_close_input(&ic);
 	}
