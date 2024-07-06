@@ -217,6 +217,11 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
 #define getaddrinfo ff_getaddrinfo
 #define freeaddrinfo ff_freeaddrinfo
 #define getnameinfo ff_getnameinfo
+#else
+	int getnameinfo(const struct sockaddr *restrict sa, socklen_t sl,
+		char *restrict node, socklen_t nodelen,
+		char *restrict serv, socklen_t servlen,
+		int flags);
 #endif /* !HAVE_GETADDRINFO */
 
 #if !HAVE_GETADDRINFO || HAVE_WINSOCK2_H

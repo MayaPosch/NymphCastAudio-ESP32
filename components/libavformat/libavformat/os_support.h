@@ -136,7 +136,7 @@ typedef int socklen_t;
 #endif
 
 #if !HAVE_POLL_H
-//typedef unsigned long nfds_t; // Disable for LwIP...
+//typedef unsigned long nfds_t;
 
 #if HAVE_WINSOCK2_H
 #include <winsock2.h>
