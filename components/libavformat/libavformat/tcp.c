@@ -152,10 +152,13 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
         ret = getaddrinfo(NULL, portstr, &hints, &ai);
     else
         ret = getaddrinfo(hostname, portstr, &hints, &ai);
-    if (ret) {
+    if (ret) {/* 
         av_log(h, AV_LOG_ERROR,
                "Failed to resolve hostname %s: %s\n",
-               hostname, gai_strerror(ret));
+               hostname, gai_strerror(ret)); */
+        av_log(h, AV_LOG_ERROR,
+               "Failed to resolve hostname %s: %d\n",
+               hostname, ret);
         return AVERROR(EIO);
     }
 
@@ -216,7 +219,7 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
     return ret;
 }
 
-static int tcp_accept(URLContext *s, URLContext **c)
+static int ff_tcp_accept(URLContext *s, URLContext **c)
 {
     TCPContext *sc = s->priv_data;
     TCPContext *cc;
@@ -234,7 +237,7 @@ static int tcp_accept(URLContext *s, URLContext **c)
     return 0;
 }
 
-static int tcp_read(URLContext *h, uint8_t *buf, int size)
+static int ff_tcp_read(URLContext *h, uint8_t *buf, int size)
 {
     TCPContext *s = h->priv_data;
     int ret;
@@ -250,7 +253,7 @@ static int tcp_read(URLContext *h, uint8_t *buf, int size)
     return ret < 0 ? ff_neterrno() : ret;
 }
 
-static int tcp_write(URLContext *h, const uint8_t *buf, int size)
+static int ff_tcp_write(URLContext *h, const uint8_t *buf, int size)
 {
     TCPContext *s = h->priv_data;
     int ret;
@@ -264,7 +267,7 @@ static int tcp_write(URLContext *h, const uint8_t *buf, int size)
     return ret < 0 ? ff_neterrno() : ret;
 }
 
-static int tcp_shutdown(URLContext *h, int flags)
+static int ff_tcp_shutdown(URLContext *h, int flags)
 {
     TCPContext *s = h->priv_data;
     int how;
@@ -280,7 +283,7 @@ static int tcp_shutdown(URLContext *h, int flags)
     return shutdown(s->fd, how);
 }
 
-static int tcp_close(URLContext *h)
+static int ff_tcp_close(URLContext *h)
 {
     TCPContext *s = h->priv_data;
     closesocket(s->fd);
@@ -316,13 +319,13 @@ static int tcp_get_window_size(URLContext *h)
 const URLProtocol ff_tcp_protocol = {
     .name                = "tcp",
     .url_open            = tcp_open,
-    .url_accept          = tcp_accept,
-    .url_read            = tcp_read,
-    .url_write           = tcp_write,
-    .url_close           = tcp_close,
+    .url_accept          = ff_tcp_accept,
+    .url_read            = ff_tcp_read,
+    .url_write           = ff_tcp_write,
+    .url_close           = ff_tcp_close,
     .url_get_file_handle = tcp_get_file_handle,
     .url_get_short_seek  = tcp_get_window_size,
-    .url_shutdown        = tcp_shutdown,
+    .url_shutdown        = ff_tcp_shutdown,
     .priv_data_size      = sizeof(TCPContext),
     .flags               = URL_PROTOCOL_FLAG_NETWORK,
     .priv_data_class     = &tcp_class,
