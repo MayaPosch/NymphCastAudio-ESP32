@@ -41,6 +41,7 @@ Notes:
 > T0.2. Streaming from URL.
 	1. Streaming of common stream formats (RTSP).
 		=> System crash due to missing protocols. Works after adding HTTPS support to FFmpeg.
+		=> Used getnameinfo() from: https://git.tu-berlin.de/felixmoebius/lib-lwip/-/blob/main/getnameinfo.c
 	
 		Test URLs:
 		=> http://fmstream.org/index.php?l=ja
