@@ -19,7 +19,7 @@ Test setup: Wired (Ethernet) on NC client system, ESP32-S3 connected via WiFi (s
 	2. WAV	=> Filter buffer issue in log fixed with CONFIG_AVFILTER=1 in simulator. Works on HW.
 	3. OGG	=> System crash => Enabled MDCT in FFmpeg, works in sim & HW.
 	4. FLAC	=> Works => Works in simulator & HW.
-	5. APE	=> Works. 32-bit APE not supported.
+	5. APE	=> Works in sim. 32-bit APE not supported. HW: ?
 	6. WMA	=> System crash like with Ogg. => Enabled MDCT in FFmpeg, works in sim. HW: ?
 	7. AAC	=> Works.
 	
@@ -40,7 +40,7 @@ Notes:
 	
 > T0.2. Streaming from URL.
 	1. Streaming of common stream formats (RTSP).
-		=> System crash. No log yet.
+		=> System crash due to missing protocols. Works after adding HTTPS support to FFmpeg.
 	
 		Test URLs:
 		=> http://fmstream.org/index.php?l=ja
