@@ -26,6 +26,7 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "nvs.h"
+#include "driver/uart.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -42,6 +43,7 @@
 
 #include <map>
 #include <vector>
+#include <cstring>
 
 #include <npoco/NumberFormatter.h>
 
@@ -1735,6 +1737,163 @@ void logFunction(int level, std::string logStr) {
 }
 
 
+// --- READ LINE ---
+// Read a UART line, with configurable timeout in milliseconds.
+char* readLine(uart_port_t uart, uint32_t timeout) {
+	static char line[256];
+	int size;
+	char *ptr = line;
+	const TickType_t xDelay = 100 / portTICK_PERIOD_MS;
+	int counter = 0; // For timeout.
+	while(1) {
+		size = uart_read_bytes(uart, (unsigned char*) ptr, 1, xDelay);
+		if (size == 1) {
+			if (*ptr == '\n') {
+				*ptr = 0;
+				return line;
+			}
+			
+			counter = 0;
+			ptr++;
+		}
+		else {
+			// Timeout was reached, add to counter
+			counter += 100;
+			if (counter >= timeout) {
+				// Return with null pointer to indicate timeout.
+				return 0;
+			}
+		}
+			
+		vTaskDelay(1);
+	} // End of loop
+} // End of readLine
+
+
+// --- UART TASK ---
+// The UART console task is started at boot. After 3 seconds it'll begin to broadcast a 
+// 'Press key for config' message on stdout (UART0).
+// If no key is pressed, after 10 seconds a timeout is reached and the task exits.
+// If a key is pressed, enter the console:
+// - Print available commands:
+// 		- ssid	=> display SSID stored in NVS.
+//		- pass	=> display stored WiFi password.
+//		- name	=> display stored hostname.
+//		- ssidS <ssid>	=> set new SSID (provide SSID following command).
+//		- passS <pass>	=> set new WiFi password.
+//		- nameS <name>	=> set new hostname.
+//		- help	=> Show the command list.
+//		- quit	=> exit the console.
+//
+nvs_handle_t nvsHandle;
+Poco::Thread uartTask("uartConsole");
+void uartConsole(void* /*arg*/) {
+	// Enter timeout loop after 3 second pause.
+	const TickType_t xDelay = 3000 / portTICK_PERIOD_MS;
+	vTaskDelay(xDelay);
+	
+	const uart_port_t uart_num = UART_NUM_0;
+	int length = 128;
+	uint8_t data[length];
+	int msec = 0;
+	int sec = 0;
+	while (1) {
+		printf("[%d/10] Press key for shell...\n", sec);
+		
+		// Wait for key press for 10 seconds.
+		// If key press, break loop and continue, else exit task.
+		/* while (length == 0) {
+			ESP_ERROR_CHECK(uart_get_buffered_data_len(uart_num, (size_t*) &length));
+		} */
+		
+		// Wait for 100 ms.
+		length = uart_read_bytes(uart_num, data, length, 100 / portTICK_PERIOD_MS);
+		
+		if (length > 0) { break; }
+		
+		msec += 100;
+		if (msec >= 1000) {
+			sec++;
+			msec = 0;
+			if (sec >= 10) { return; } // Time-out.
+		}
+		
+		vTaskDelay(1);
+	}
+	
+	// Enter console loop.
+	// A command is a string of characters followed by a newline character (\n).
+	bool changed = false;
+	while (1) {
+		// Print command list.
+		printf("For command list, type help.\n");
+		printf("> ");
+		
+		// Read from UART until newline. Enter timeout after 30 seconds.
+		const char* line = readLine(uart_num, 30000);
+		if (line == 0) {
+			// Timeout on reading line. Exit task.
+			printf("Timeout with console. Exiting task.\n");
+			return;
+		}
+		
+		vTaskDelay(1);
+		
+		// Echo command.
+		printf("%s\n", line);
+		
+		// Process command.
+		if (strncmp(line, "help", 4) == 0) {
+			printf("Command list:\n");
+			printf("quit, ssid, pass, name\n");
+			printf("ssidS <ssid>, passS <pass>, nameS <name>\n");
+		}
+		else if (strncmp(line, "ssidS ", 6) == 0) {
+			// Split on space, set SSID to trailing string.
+			char* data = strstr(line, " ");
+			nvs_set_str(nvsHandle, "wifi_ssid", data);
+			changed = true;
+		}
+		else if (strncmp(line, "passS ", 6) == 0) {
+			// Split on space, set password to trailing string.
+			char* data = strstr(line, " ");
+			nvs_set_str(nvsHandle, "wifi_pass", data);
+			changed = true;
+		}
+		else if (strncmp(line, "nameS ", 6) == 0) {
+			// Split on space, set hostname to trailing string.
+			char* data = strstr(line, " ");
+			nvs_set_str(nvsHandle, "hostname", data);
+			changed = true;
+		}
+		else if (strncmp(line, "ssid", 4) == 0) {
+			// Read SSID.
+			printf("SSID: %s\n", wifi_ssid.c_str());
+		}
+		else if (strncmp(line, "pass", 4) == 0) {
+			printf("WiFi pass: %s\n", wifi_pass.c_str());
+		}
+		else if (strncmp(line, "name", 4) == 0) {
+			printf("Hostname: %s\n", hostName.c_str());
+		}
+		else if (strncmp(line, "quit", 4) == 0) {
+			// If we made changes to the configuration, reboot, otherwise exit task.
+			if (changed) {
+				// Reboot.
+				printf("Settings changed. Restarting system...\n");
+				esp_restart();
+			}
+			
+			printf("Exiting console...\n");
+			return;
+		}
+		else {
+			printf("Unknown command. Ignoring...\n");
+		}
+	}
+}
+
+
 #ifdef ESP_PLATFORM
 extern "C" {
 	void app_main(void);
@@ -1752,8 +1911,7 @@ void app_main() {
 	ESP_ERROR_CHECK(ret);
 	
 	// Open the WiFi namespace.
-	nvs_handle_t nvs_handle;
-	esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+	esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvsHandle);
 	if (err != ESP_OK) {
 		printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
 	}
@@ -1761,54 +1919,78 @@ void app_main() {
 	// Check NVS for WiFi SSID & password, as well as host name.
 	bool nvs_saved = true;
 	size_t required_size;
-	err = nvs_get_str(nvs_handle, "wifi_ssid", NULL, &required_size);
+	err = nvs_get_str(nvsHandle, "wifi_ssid", NULL, &required_size);
 	switch (err) {
 		case ESP_OK: {
 			char* ssid = (char*) malloc(required_size);
-			nvs_get_str(nvs_handle, "wifi_ssid", ssid, &required_size);
+			nvs_get_str(nvsHandle, "wifi_ssid", ssid, &required_size);
 			wifi_ssid = std::string(ssid, required_size);
 			free(ssid);
 			break;
 		}
 		case ESP_ERR_NVS_NOT_FOUND: {
-			// No SSID set, save to NVS later.
-			nvs_saved = false;
+			// No SSID set in NVS. Set to hardcoded wifi_ssid if found.
+			if (wifi_ssid.size() > 1) {
+				// Save to NVS.
+				nvs_set_str(nvsHandle, "wifi_ssid", wifi_ssid.c_str());
+				nvs_saved = true;
+			}
+			else {
+				nvs_saved = false;
+			}
+		
 			break;
 		}
 		default :
 			printf("Error (%s) reading!\n", esp_err_to_name(err));
 	}
 	
-	err = nvs_get_str(nvs_handle, "wifi_pass", NULL, &required_size);
+	err = nvs_get_str(nvsHandle, "wifi_pass", NULL, &required_size);
 	switch (err) {
 		case ESP_OK: {
 			char* pass = (char*) malloc(required_size);
-			nvs_get_str(nvs_handle, "wifi_pass", pass, &required_size);
+			nvs_get_str(nvsHandle, "wifi_pass", pass, &required_size);
 			wifi_pass = std::string(pass, required_size);
 			free(pass);
 			break;
 		}
 		case ESP_ERR_NVS_NOT_FOUND: {
 			// No password set, save to NVS later.
-			nvs_saved = false;
+			if (wifi_pass.size() > 1) {
+				// Save to NVS.
+				nvs_set_str(nvsHandle, "wifi_pass", wifi_pass.c_str());
+				nvs_saved = true;
+			}
+			else {
+				nvs_saved = false;
+			}
+			
 			break;
 		}
 		default :
 			printf("Error (%s) reading!\n", esp_err_to_name(err));
 	}
 	
-	err = nvs_get_str(nvs_handle, "hostname", NULL, &required_size);
+	err = nvs_get_str(nvsHandle, "hostname", NULL, &required_size);
 	switch (err) {
 		case ESP_OK: {
 			char* name = (char*) malloc(required_size);
-			nvs_get_str(nvs_handle, "hostname", name, &required_size);
+			nvs_get_str(nvsHandle, "hostname", name, &required_size);
 			hostName = std::string(name, required_size);
 			free(name);
 			break;
 		}
 		case ESP_ERR_NVS_NOT_FOUND:{
 			// No hostname set, save to NVS later.
-			nvs_saved = false;
+			if (hostName.size() > 1) {
+				// Save to NVS.
+				nvs_set_str(nvsHandle, "hostname", hostName.c_str());
+				nvs_saved = true;
+			}
+			else {
+				nvs_saved = false;
+			}
+			
 			break;
 		}
 		default :
@@ -1817,7 +1999,7 @@ void app_main() {
 	
 	// Start the console module. If no WiFi details were defined or found in NVS, skip connecting.
 	// TODO:
-	
+	uartTask.start(uartConsole, 0);
 
 	// Set up WiFi.
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
