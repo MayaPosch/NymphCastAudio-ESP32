@@ -1918,6 +1918,7 @@ void app_main() {
 	
 	// Check NVS for WiFi SSID & password, as well as host name.
 	bool nvs_saved = true;
+	bool nvs_name = true;
 	size_t required_size;
 	err = nvs_get_str(nvsHandle, "wifi_ssid", NULL, &required_size);
 	switch (err) {
@@ -1985,10 +1986,11 @@ void app_main() {
 			if (hostName.size() > 1) {
 				// Save to NVS.
 				nvs_set_str(nvsHandle, "hostname", hostName.c_str());
-				nvs_saved = true;
+				nvs_name = true;
 			}
 			else {
-				nvs_saved = false;
+				hostName = "NCA-ESP32";
+				nvs_name = false;
 			}
 			
 			break;
@@ -2000,6 +2002,13 @@ void app_main() {
 	// Start the console module. If no WiFi details were defined or found in NVS, skip connecting.
 	// TODO:
 	uartTask.start(uartConsole, 0);
+	
+	if (!nvs_saved) {
+		// No WiFi credentials available, skip setting up NCA.
+		// We just exit here and allow the user to set credentials in the console.
+		printf("Error: no WiFi credentials. Please set via console or header.\n");
+		return;
+	}
 
 	// Set up WiFi.
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
