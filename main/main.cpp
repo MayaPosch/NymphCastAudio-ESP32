@@ -1846,6 +1846,7 @@ void uartConsole(void* /*arg*/) {
 	
 	// Enter console loop.
 	// A command is a string of characters followed by a newline character (\n) or carriage return (\r).
+	setvbuf(stdout, NULL, _IONBF, 0);	// non-buffered output, to allow for `printf("> ");` below
 	bool changed = false;
 	while (1) {
 		// Print command list.
