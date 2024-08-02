@@ -1748,11 +1748,13 @@ char* readLine(uart_port_t uart, uint32_t timeout) {
 	while(1) {
 		size = uart_read_bytes(uart, (unsigned char*) ptr, 1, xDelay);
 		if (size == 1) {
-			if (*ptr == '\n') {
+			if (*ptr == '\n' || *ptr == '\r') {
 				*ptr = 0;
 				return line;
 			}
 			
+			// Echo character
+			printf("%c", *ptr);
 			counter = 0;
 			ptr++;
 		}
@@ -1797,8 +1799,25 @@ void uartConsole(void* /*arg*/) {
 	uint8_t data[length];
 	int msec = 0;
 	int sec = 0;
+	int sec_last = -1;
+
+	struct scoped_cleanup {
+		~scoped_cleanup() {
+			ESP_ERROR_CHECK(uart_driver_delete(uart_num));
+			setvbuf(stdout, NULL, _IOLBF, 0);	// restore line-buffered output
+		}
+	};
+
+	// Install UART driver not using an event queue:
+	ESP_ERROR_CHECK(uart_driver_install(uart_num, 130, 0, 0, NULL, 0));
+
+	scoped_cleanup cleanup;
+
 	while (1) {
-		printf("[%d/10] Press key for shell...\n", sec);
+		if (sec > sec_last) {
+			sec_last = sec;
+			printf("[%d/10] Press key for shell...\n", sec);
+		}
 		
 		// Wait for key press for 10 seconds.
 		// If key press, break loop and continue, else exit task.
@@ -1806,8 +1825,12 @@ void uartConsole(void* /*arg*/) {
 			ESP_ERROR_CHECK(uart_get_buffered_data_len(uart_num, (size_t*) &length));
 		} */
 		
-		// Wait for 100 ms.
-		length = uart_read_bytes(uart_num, data, length, 100 / portTICK_PERIOD_MS);
+		// Read a single character, wait for 100 ms.
+		length = uart_read_bytes(uart_num, data, 1, 100 / portTICK_PERIOD_MS);
+
+		if (length == -1) {
+			printf("uartConsole(): Error reading from console '%d'\n", uart_num);
+		}
 		
 		if (length > 0) { break; }
 		
@@ -1822,7 +1845,7 @@ void uartConsole(void* /*arg*/) {
 	}
 	
 	// Enter console loop.
-	// A command is a string of characters followed by a newline character (\n).
+	// A command is a string of characters followed by a newline character (\n) or carriage return (\r).
 	bool changed = false;
 	while (1) {
 		// Print command list.
@@ -1838,9 +1861,6 @@ void uartConsole(void* /*arg*/) {
 		}
 		
 		vTaskDelay(1);
-		
-		// Echo command.
-		printf("%s\n", line);
 		
 		// Process command.
 		if (strncmp(line, "help", 4) == 0) {
