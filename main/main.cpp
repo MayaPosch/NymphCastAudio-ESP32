@@ -1748,13 +1748,11 @@ char* readLine(uart_port_t uart, uint32_t timeout) {
 	while(1) {
 		size = uart_read_bytes(uart, (unsigned char*) ptr, 1, xDelay);
 		if (size == 1) {
-			if (*ptr == '\n' || *ptr == '\r') {
+			if (*ptr == '\r' || *ptr == '\n') {
 				*ptr = 0;
 				return line;
 			}
 			
-			// Echo character
-			printf("%c", *ptr);
 			counter = 0;
 			ptr++;
 		}
@@ -1862,6 +1860,9 @@ void uartConsole(void* /*arg*/) {
 		}
 		
 		vTaskDelay(1);
+		
+		// Echo command.
+		printf("%s\n", line);
 		
 		// Process command.
 		if (strncmp(line, "help", 4) == 0) {
