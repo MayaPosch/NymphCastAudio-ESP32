@@ -27,6 +27,8 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/uart.h"
+#include "esp_netif_sntp.h"
+#include "esp_sntp.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -2044,6 +2046,10 @@ void app_main() {
 		
 		return;
 	}
+	
+	// Start the NTP task to update the RTC clock.
+	esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+	esp_netif_sntp_init(&config);
 #else
 int main() {
 #endif
