@@ -547,7 +547,7 @@ bool startSlavePlayback() {
 		NymphCastSlaveRemote& rm = slave_remotes[i];
 		//then = slaveLatencyMax - rm.delay;
 		then = countdown - (rm.delay / 2);
-			
+		ts.update();
 		int64_t send = (int64_t) ts.epochMicroseconds();
 		
 		// Prepare data vector.
@@ -562,7 +562,8 @@ bool startSlavePlayback() {
 		}
 			
 		delete returnValue;
-			
+		
+		ts.update();
 		int64_t receive = (int64_t) ts.epochMicroseconds();
 			
 		countdown -= (receive - send);
@@ -1201,6 +1202,7 @@ NymphMessage* session_data(int session, NymphMessage* msg, void* data) {
 			if (!ffplay.playbackActive()) {
 				//then = slaveLatencyMax - rm.delay;
 				then = countdown - (rm.delay / 2);
+				ts.update();
 				send = (int64_t) ts.epochMicroseconds();
 			}
 		
@@ -1221,6 +1223,7 @@ NymphMessage* session_data(int session, NymphMessage* msg, void* data) {
 			delete returnValue;
 			
 			if (!ffplay.playbackActive()) {
+				ts.update();
 				int64_t receive = (int64_t) ts.epochMicroseconds();
 			
 				countdown -= (receive - send);
