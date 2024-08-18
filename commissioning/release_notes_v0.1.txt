@@ -21,7 +21,7 @@ Scope of the project is the firmware (based on the ESP-IDF framework), and a ref
 > Target stable features:
 
 - Playback of all audio formats supported by FFmpeg. (See test protocol).
-- Playback of live streams (e.g. RTSP) supported by FFmpeg. (See test protocol).
+- Playback of live streams (e.g. RTSP, HTTP(S)) supported by FFmpeg. (See test protocol).
 - Multi-room connection & playback. (See test protocol).
 - Serial-based setup & configuration.
 

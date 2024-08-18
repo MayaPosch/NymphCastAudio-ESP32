@@ -30,10 +30,11 @@ Notes:
 	- WAV gives the abuffersink error in log, then playback hangs until stopped.
 	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
 		=> Fixed in sdl_dummy: return correct sample rate to player.
+	- Sometimes slight stutter on start.
 
 2. Playback of various video formats (video & audio streams, audio-only output):
 	1. MKV
-	2. AVI
+	2. AVI	=> Fails playback.
 	3. WEBM (MKV derivative).
 	4. MP4
 	5.
@@ -63,6 +64,10 @@ Criteria:
 	1. Smooth playback, no audio artefacts.
 	2. Ability to pause, resume and stop without glitches or artefacts.
 	
+Findings:
+	- Playback is choppy with Shonan Beach FM stream. Drops out after a few minutes.
+	- Some URLs cause a crash/hang requiring reset. => TODO: obtain logs & traces.
+	
 	
 == T1. Multi-room ==
 
@@ -74,6 +79,12 @@ Criteria:
 
 Additional criteria:
 	1. Synchronisation between the different NCA-ESP32 instances.
+	
+Findings:
+	- NymphCast Player issues:
+		- if NCS on localhost, prefers VirtualBox LAN -> breaks group.
+		- NCP cannot add custom IP NCS.
+		- NCP on Android cannot create groups.
 	
 	
 --- General Remarks ---
