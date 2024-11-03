@@ -28,6 +28,7 @@ Notes:
 	- Position keeps getting reset to 0:00 by NCA update in client with OGG & FLAC.
 		=> Fixed by calling video refresh function.
 	- WAV gives the abuffersink error in log, then playback hangs until stopped.
+		=> Fixed with configuration change.
 	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
 		=> Fixed in sdl_dummy: return correct sample rate to player.
 	- Sometimes slight stutter on start.
@@ -38,6 +39,10 @@ Notes:
 	3. WEBM (MKV derivative).
 	4. MP4
 	5.
+	
+Notes:
+	- Trying to play an AVI file resulted in failure to open the media file. Still investigating.
+	- Experimental. May have to block these formats in the player.
 	
 > T0.2. Streaming from URL.
 	1. Streaming of common stream formats (RTSP, HTTP(S)).

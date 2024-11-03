@@ -8,7 +8,10 @@ The NymphCast Audio - ESP32 (NCA-ESP32) project is an implementation of NymphCas
 
 - Auto-discovery using NyanSD.
 - Streaming of most audio and video formats (audio track only).
+- Multi-room audio playback.
 - Playback of online (RTSP) streams and similar.
+
+**Note:** NCA-ESP32 is still a project under development, so not all features are stable or fully functional yet.
 
 ## Reference Design ##
 
