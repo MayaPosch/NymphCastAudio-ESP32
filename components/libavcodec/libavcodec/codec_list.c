@@ -1,6 +1,7 @@
 static const FFCodec * const codec_list[] __attribute__((__section__(".flash.rodata"))) = {
     &ff_aac_decoder,
     &ff_aac_latm_decoder,
+	&ff_adpcm_ms_decoder,
     &ff_ac3_decoder,
     &ff_alac_decoder,
     &ff_als_decoder,
