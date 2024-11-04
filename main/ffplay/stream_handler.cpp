@@ -1024,7 +1024,10 @@ void StreamHandler::read_thread(void *arg) {
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
 			// FIXME: hack.
-			if (ret == AVERROR_EOF) { eof = true; break; }
+			if (ret == AVERROR_EOF && (file_meta.position >= file_meta.duration)) { 
+				eof = true; 
+				break; 
+			}
 			
 			av_log(NULL, AV_LOG_WARNING, "av_read_frame() returned <0, no EOF.\n");
 			
