@@ -18,7 +18,7 @@ Test setup: Wired (Ethernet) on NC client system, ESP32-S3 connected via WiFi (s
 	1. MP3 	=> Works.
 	2. WAV	=> Filter buffer issue in log fixed with CONFIG_AVFILTER=1 in simulator. Works on HW.
 	3. OGG	=> System crash => Enabled MDCT in FFmpeg, works in sim & HW.
-	4. FLAC	=> Works => Works in simulator & HW.
+	4. FLAC	=> Works => Works in simulator & HW with stutter at start.
 	5. APE	=> Works in sim. 32-bit APE not supported. HW: ?
 	6. WMA	=> System crash like with Ogg. => Enabled MDCT in FFmpeg, works in sim. HW: ?
 	7. AAC	=> Works.
@@ -31,7 +31,8 @@ Notes:
 		=> Fixed with configuration change.
 	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
 		=> Fixed in sdl_dummy: return correct sample rate to player.
-	- Sometimes slight stutter on start.
+	- Sometimes slight stutter on start (FLAC only?).
+	- Crash on [Stop].
 
 2. Playback of various video formats (video & audio streams, audio-only output):
 	1. MKV
@@ -72,6 +73,7 @@ Criteria:
 Findings:
 	- Playback is choppy with Shonan Beach FM stream. Drops out after a few minutes.
 	- Some URLs cause a crash/hang requiring reset. => TODO: obtain logs & traces.
+	- Playback quality seems heavily reliant on quality of the WiFi connection.
 	
 	
 == T1. Multi-room ==
