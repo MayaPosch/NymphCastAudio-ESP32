@@ -465,7 +465,8 @@ void StreamHandler::stream_close(VideoState *is) {
     /* XXX: use a special url_shutdown call to abort parse cleanly */
     is->abort_request = 1;
     //SDL_WaitThread(is->read_tid, NULL);
-	is->read_tid->join();
+	//is->read_tid->join();
+	delete is->read_tid;
 
     /* close each stream */
     if (is->audio_stream >= 0)
