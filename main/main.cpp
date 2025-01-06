@@ -262,7 +262,7 @@ std::string loggerName = "NymphCastServer";
 // -- BLOCK SIZE ---
 // This defines the size of the data blocks requested from the client with a read request.
 // Defined in kilobytes.
-uint32_t readBlockSize = 20;
+uint32_t readBlockSize = 50;
 // ---
 
 
@@ -2347,7 +2347,8 @@ int main() {
 	
 	// Initialise buffer.
 	NYMPH_LOG_INFORMATION("Setting up DataBuffer...");
-	uint32_t buffer_size = 1048576; // 1 MB
+	//uint32_t buffer_size = 1048576; // 1 MB
+	uint32_t buffer_size = 2097152; // 2 MB
 	DataBuffer::init(buffer_size);
 	DataBuffer::setSeekRequestCallback(seekingHandler);
 	DataBuffer::setDataRequestCallback(dataRequestHandler);
