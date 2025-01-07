@@ -2422,7 +2422,7 @@ int main() {
 	NYMPH_LOG_INFORMATION("Starting ffplay...");
 #ifdef ESP_PLATFORM
 	avThread.setStackSize(12288); 	// 12 kB.
-	avThread.useExternalRAM(true); 	// Use external RAM for stack.
+	//avThread.useExternalRAM(true); 	// Use external RAM for stack.
 #endif
 	avThread.start(ffplay);
 	
