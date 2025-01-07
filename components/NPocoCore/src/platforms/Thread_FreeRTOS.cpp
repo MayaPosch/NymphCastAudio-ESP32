@@ -189,6 +189,14 @@ bool ThreadImpl::startImpl(SharedPtr<Runnable> pTarget) {
 	}
 	
 	// Set assigned thread name, if any.
+	esp_pthread_cfg_t esp_pthread_cfg;
+	esp_pthread_cfg = esp_pthread_get_default_config();
+	std::string name = reinterpret_cast<Thread*>(this)->getName();
+	esp_pthread_cfg.thread_name = name.c_str();
+	if (esp_pthread_set_cfg(&esp_pthread_cfg) != ESP_OK) {
+		// Error.
+		return false;
+	}
 	/* std::string name = reinterpret_cast<Thread*>(this)->getName();
 	if (!name.empty()) {
 		pthread_attr_setname(&attributes, name.c_str());
@@ -204,7 +212,6 @@ bool ThreadImpl::startImpl(SharedPtr<Runnable> pTarget) {
 		}
 	}
 	else {
-		std::string name = reinterpret_cast<Thread*>(this)->getName();
 		if (pthread_create_esp32(&_pData->thread, &attributes, runnableEntry, this, name.c_str(),
 									_pData->xTaskBuffer, _pData->xStack, _pData->coreId)) {
 			_pData->pRunnableTarget = 0;
