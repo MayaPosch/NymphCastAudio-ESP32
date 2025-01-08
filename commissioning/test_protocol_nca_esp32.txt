@@ -32,7 +32,7 @@ Notes:
 	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
 		=> Fixed in sdl_dummy: return correct sample rate to player.
 	- Sometimes slight stutter on start (FLAC only?).
-	- Crash on [Stop].
+	- Crash on [Stop]. => Fixed with change from `read_thread.join()` to `delete read_thread`.
 
 2. Playback of various video formats (video & audio streams, audio-only output):
 	1. MKV
