@@ -31,6 +31,7 @@ uint32_t profcount = 0;
 std::atomic_bool Player::run;
 VideoState* Player::cur_stream = 0;
 double Player::remaining_time = 0.0;
+std::string Player::loggerName = "Player";
 
 
 // --- CONSTRUCTOR ---
@@ -475,6 +476,7 @@ bool Player::process_event(SDL_Event &event) {
 			av_log(NULL, AV_LOG_INFO, "Exiting event loop...\n");
 			
 			// Signal the player thread that the playback has ended.
+			NYMPH_LOG_DEBUG("Playback end called.");
 			StreamHandler::quit();
 			
 			break;

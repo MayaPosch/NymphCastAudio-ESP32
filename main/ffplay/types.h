@@ -21,6 +21,12 @@
 	#include <Poco/Condition.h>
 #endif
 
+#ifdef ESP_PLATFORM
+#include <nymph_logger.h>
+#else
+#include <nymph/nymph_logger.h>
+#endif
+
 
 #include "config.h"
 

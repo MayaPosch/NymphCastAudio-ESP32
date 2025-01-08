@@ -1090,6 +1090,8 @@ fail:
 	// Disable player events.
 	SdlRenderer::playerEvents(false);
 	
+	NYMPH_LOG_DEBUG("Read thread end: close input.");
+	
 	if (ret == -1) {
 		// Opening stream failed. Context will have been deleted already, so safe exit.
 		fault = true;
@@ -1102,6 +1104,8 @@ fail:
 		avformat_close_input(&ic);
 	}
 	
+	NYMPH_LOG_DEBUG("Read thread end: quit player.");
+	
 	Player::quit();
 	//SDL_Event event;
 	//event.type = SDL_KEYDOWN;
@@ -1112,6 +1116,8 @@ fail:
 	
 	AudioRenderer::quit();
 	VideoRenderer::quit();
+	
+	NYMPH_LOG_DEBUG("Read thread end: Signal ffplay.");
 	
 	// Signal the player thread that the playback has ended.
 	playerCon.signal();
@@ -1206,6 +1212,9 @@ VideoState* StreamHandler::stream_open(const char *filename, AVInputFormat *ifor
 	is->read_tid->setStackSize(51200);		// 50 kB.
 	//is->read_tid->useExternalRAM(true); // Use external RAM for stack.
 #endif
+
+	NYMPH_LOG_DEBUG("Starting read thread.");
+
 	is->read_tid->start(read_thread, is);
     /*if (!is->read_tid) {
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateThread(): %s\n", SDL_GetError());

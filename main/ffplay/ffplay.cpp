@@ -284,6 +284,8 @@ void Ffplay::run() {
 		
 		// Start playback.
 		playerStarted = true;
+		
+		NYMPH_LOG_DEBUG("Starting playback.");
 			
 #ifdef ESP_PLATFORM
 		// Debug
@@ -337,6 +339,8 @@ void Ffplay::run() {
 			input_filename = castUrl.c_str();
 		}
 		
+		NYMPH_LOG_DEBUG("Start player. Open stream.");
+		
 		// Start player.
 		is = StreamHandler::stream_open(input_filename, file_iformat, formatContext);
 		if (!is) {
@@ -354,11 +358,15 @@ void Ffplay::run() {
 		Player::setVideoState(is);
 		SdlRenderer::playerEvents(true);
 		
+		NYMPH_LOG_DEBUG("Wait for playback end.");
+		
 		// Wait here until playback has finished.
 		// The read thread in StreamHandler will signal this condition variable.
 		playerMutex.lock();
 		playerCon.wait(playerMutex);
 		playerMutex.unlock();
+		
+		NYMPH_LOG_DEBUG("Playback has finished. Resuming.");
 		
 		// Ensure we disable player events since we're no longer processing them.
 		// The StreamHandler::read_thread should have disabled them already.

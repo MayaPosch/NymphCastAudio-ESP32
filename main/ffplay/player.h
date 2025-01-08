@@ -12,6 +12,7 @@ class Player {
 	static VideoState* cur_stream;
 	//Config config;
 	
+	static std::string loggerName;
 	static std::atomic_bool run;
 	static double remaining_time;
 	

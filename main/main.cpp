@@ -1261,6 +1261,9 @@ NymphMessage* session_data(int session, NymphMessage* msg, void* data) {
 			while (cv.wait_for(lk, dur) != std::cv_status::timeout) { }
 		} */
 		
+		
+		NYMPH_LOG_DEBUG("Play Track called on ffplay.");
+		
 		// Start playback locally.
 		ffplay.playTrack();
 		
@@ -1489,6 +1492,8 @@ NymphMessage* playback_start(int session, NymphMessage* msg, void* data) {
 		}
 	}
 	
+	NYMPH_LOG_DEBUG("Playback Start called.");
+	
 	SDL_Event event;
 	event.type = SDL_KEYDOWN;
 	event.key.keysym.sym = SDLK_SPACE;
@@ -1524,6 +1529,8 @@ NymphMessage* playback_stop(int session, NymphMessage* msg, void* data) {
 			delete returnValue;
 		}
 	}
+	
+	NYMPH_LOG_DEBUG("Playback Stop called.");
 	
 	SDL_Event event;
 	event.type = SDL_KEYDOWN;
@@ -1741,10 +1748,14 @@ void logFunction(int level, std::string logStr) {
 		ESP_LOGI(TAG, "%s", logStr.c_str());
 	}
 	else if (level == NYMPH_LOG_LEVEL_DEBUG) {
-		ESP_LOGD(TAG, "%s", logStr.c_str());
+		Poco::Timestamp ts;
+		int64_t now = (int64_t) ts.epochMicroseconds();
+		ESP_LOGD(TAG, "[%lld] %s", now, logStr.c_str());
 	}
 	else if (level == NYMPH_LOG_LEVEL_TRACE) {
-		ESP_LOGV(TAG, "%s", logStr.c_str());
+		Poco::Timestamp ts;
+		int64_t now = (int64_t) ts.epochMicroseconds();
+		ESP_LOGV(TAG, "[%lld] %s", now, logStr.c_str());
 	}
 #else
 	//
@@ -2347,8 +2358,8 @@ int main() {
 	
 	// Initialise buffer.
 	NYMPH_LOG_INFORMATION("Setting up DataBuffer...");
-	//uint32_t buffer_size = 1048576; // 1 MB
-	uint32_t buffer_size = 2097152; // 2 MB
+	uint32_t buffer_size = 1048576; // 1 MB
+	//uint32_t buffer_size = 2097152; // 2 MB
 	DataBuffer::init(buffer_size);
 	DataBuffer::setSeekRequestCallback(seekingHandler);
 	DataBuffer::setDataRequestCallback(dataRequestHandler);
@@ -2421,8 +2432,9 @@ int main() {
 	// Start AV thread.
 	NYMPH_LOG_INFORMATION("Starting ffplay...");
 #ifdef ESP_PLATFORM
-	avThread.setStackSize(12288); 	// 12 kB.
-	//avThread.useExternalRAM(true); 	// Use external RAM for stack.
+	//avThread.setStackSize(12288); 	// 12 kB.
+	avThread.setStackSize(24576); 	// 24 kB for debugging
+	avThread.useExternalRAM(true); 	// Use external RAM for stack.
 #endif
 	avThread.start(ffplay);
 	
