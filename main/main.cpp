@@ -1737,22 +1737,21 @@ NymphMessage* playback_status(int session, NymphMessage* msg, void* data) {
 // --- LOG FUNCTION ---
 void logFunction(int level, std::string logStr) {
 #ifdef ESP_PLATFORM
-	if (level == NYMPH_LOG_LEVEL_FATAL || level == NYMPH_LOG_LEVEL_CRITICAL || 
-		level == NYMPH_LOG_LEVEL_ERROR) {
+	if (level == 0 || level == 1 || level == 2) {	// FATAL, CRITICAL, ERROR
 		ESP_LOGE(TAG, "%s", logStr.c_str());
 	}
-	else if (level == NYMPH_LOG_LEVEL_WARNING) {
+	else if (level == 3) {							// WARNING
 		ESP_LOGW(TAG, "%s", logStr.c_str());
 	}
-	else if (level == NYMPH_LOG_LEVEL_NOTICE || level == NYMPH_LOG_LEVEL_INFO) {
+	else if (level == 4 || level == 5) {			// NOTICE, INFORMATION
 		ESP_LOGI(TAG, "%s", logStr.c_str());
 	}
-	else if (level == NYMPH_LOG_LEVEL_DEBUG) {
+	else if (level == 6) {							// DEBUG
 		Poco::Timestamp ts;
 		int64_t now = (int64_t) ts.epochMicroseconds();
 		ESP_LOGD(TAG, "[%lld] %s", now, logStr.c_str());
 	}
-	else if (level == NYMPH_LOG_LEVEL_TRACE) {
+	else if (level == 7) {							// TRACE
 		Poco::Timestamp ts;
 		int64_t now = (int64_t) ts.epochMicroseconds();
 		ESP_LOGV(TAG, "[%lld] %s", now, logStr.c_str());
