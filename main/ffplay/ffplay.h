@@ -41,15 +41,23 @@
 #include "types.h"
 
 
+// Forward declarations
+void finishPlayback(); 			// Defined in NymphCastServer.cpp
+void sendGlobalStatusUpdate();	// Defined in NymphCastServer.cpp
+bool startSlavePlayback();		// Defined in NymphCastServer.cpp
+
+
 struct FileMetaInfo {
 	std::atomic<uint64_t> duration;		// seconds
 	std::atomic<double> position;		// seconds with remainder.
+	std::atomic<float> last_update;		// seconds with remainder.
 	std::atomic<uint32_t> width;		// pixels
 	std::atomic<uint32_t> height;		// pixels
 	std::atomic<uint32_t> video_rate;	// kilobits per second
 	std::atomic<uint32_t> audio_rate;	// kilobits per second
 	std::atomic<uint32_t> framrate;
 	std::atomic<uint8_t> audio_channels;
+	std::atomic<bool> seeking;			// true while seeking.
 	std::string title;
 	std::string artist;
 	std::string album;
@@ -63,8 +71,23 @@ struct FileMetaInfo {
 	uint64_t getDuration() { return duration; }
 	
 	void setPosition(double p) {
-		if (std::isnan(p)) { position = 0; }
-		else { position = p; }
+		// Check for an invalid number (libav glitch?). Set new position otherwise.
+		
+		// Set new position, send client status update if more than N seconds since last time.
+		if (seeking) {
+			// Seeking mode got set. Always send this first update to clients.
+			sendGlobalStatusUpdate();
+			seeking = false;
+		}
+		if (last_update >= 75.0) { // ~3 seconds
+			sendGlobalStatusUpdate();
+			last_update = 0.0;
+		}
+		else {
+			last_update = last_update + 1; //REFRESH_RATE; // 0.01, or 100 Hz by default.
+		}
+		
+		position = p;
 	}
 	
 	double getPosition() { return position; }
@@ -77,15 +100,13 @@ struct FileMetaInfo {
 	
 	void setAlbum(std::string a) { mutex.lock(); album = a; mutex.unlock(); }
 	std::string getAlbum() { mutex.lock(); std::string a = album; mutex.unlock(); return a; }
+	
+	void setSeeking() { seeking = true; }
 };
 
 
 // --- Globals ---
 //extern FileMetaInfo file_meta;
-	
-void finishPlayback(); 			// Defined in NymphCastServer.cpp
-void sendGlobalStatusUpdate();	// Defined in NymphCastServer.cpp
-bool startSlavePlayback();		// Defined in NymphCastServer.cpp
 
 	
 class Ffplay : public Poco::Runnable {

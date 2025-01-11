@@ -1271,7 +1271,7 @@ NymphMessage* session_data(int session, NymphMessage* msg, void* data) {
 	}
 	else {
 		// Send status update to clients.
-		sendGlobalStatusUpdate();
+		//sendGlobalStatusUpdate();
 	}
 	
 	returnMsg->setResultValue(new NymphType((uint8_t) 0));
@@ -1355,7 +1355,7 @@ NymphMessage* volume_set(int session, NymphMessage* msg, void* data) {
 	ffplay.setVolume(volume);
 	
 	// Inform all clients of this update.
-	sendGlobalStatusUpdate();
+	//sendGlobalStatusUpdate();
 	
 	returnMsg->setResultValue(new NymphType((uint8_t) 0));
 	msg->discard();
@@ -1464,7 +1464,7 @@ NymphMessage* volume_mute(int session, NymphMessage* msg, void* data) {
 	event.key.keysym.sym = SDLK_m;
 	SDL_PushEvent(&event);
 	
-	sendGlobalStatusUpdate();
+	//sendGlobalStatusUpdate();
 	
 	returnMsg->setResultValue(new NymphType((uint8_t) 0));
 	msg->discard();
@@ -1502,7 +1502,7 @@ NymphMessage* playback_start(int session, NymphMessage* msg, void* data) {
 	playerPaused = false;
 	
 	// Send status update to clients.
-	sendGlobalStatusUpdate();
+	//sendGlobalStatusUpdate();
 	
 	returnMsg->setResultValue(new NymphType((uint8_t) 0));
 	msg->discard();
@@ -1574,7 +1574,7 @@ NymphMessage* playback_pause(int session, NymphMessage* msg, void* data) {
 	playerPaused = !playerPaused;
 	
 	// Send status update to clients.
-	sendGlobalStatusUpdate();
+	//sendGlobalStatusUpdate();
 	
 	returnMsg->setResultValue(new NymphType((uint8_t) 0));
 	msg->discard();
