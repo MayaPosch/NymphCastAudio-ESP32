@@ -618,16 +618,11 @@ void StreamHandler::read_thread(void *arg) {
     int64_t stream_start_time;
     int pkt_in_play_range = 0;
     AVDictionaryEntry *t;
-    //SDL_mutex *wait_mutex = SDL_CreateMutex();
 	Poco::Mutex wait_mutex;
     int scan_all_pmts_set = 0;
     int64_t pkt_ts;
-
-    /* if (!wait_mutex) {
-        av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
-        ret = AVERROR(ENOMEM);
-        goto fail;
-    } */
+	
+	std::atomic<double> last_position = { 0 };
 
     memset(st_index, -1, sizeof(st_index));
     is->last_video_stream = is->video_stream = -1;
@@ -1025,9 +1020,13 @@ void StreamHandler::read_thread(void *arg) {
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
 			// FIXME: hack.
-			if (ret == AVERROR_EOF && (file_meta.position >= file_meta.duration)) { 
-				eof = true; 
+			if ((ret == AVERROR_EOF && (file_meta.position >= file_meta.duration)) ||
+										(file_meta.position < last_position)) {
+				eof = true;
 				break; 
+			}
+			else {
+				last_position = file_meta.position.load();
 			}
 			
 			av_log(NULL, AV_LOG_WARNING, "av_read_frame() returned <0, no EOF.\n");
