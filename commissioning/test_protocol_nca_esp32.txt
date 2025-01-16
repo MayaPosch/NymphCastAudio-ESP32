@@ -8,6 +8,10 @@ Commissioning the NCA-ESP32 project requires it to pass a number of tests, which
 
 Test setup: Wired (Ethernet) on NC client system, ESP32-S3 connected via WiFi (same subnet).
 
+ESP32-S3 details:
+- R8N16 or equivalent with octal SPI PSRAM interface.
+- WiFi default, Ethernet as option (LAN8720).
+
 ---
 
 == T0. Playback ==
@@ -79,6 +83,8 @@ Findings:
 		=> M3U8s seem to end up in a loop & hang, may need time-out?
 	- Playback quality seems heavily reliant on quality of the WiFi connection.
 		=> Confirmed. Adjusted WIFI & TCP stack with more (RX) buffers, etc.
+		=> References:	https://gist.github.com/EverythingSmartHome/055fbdde31a607ef9d695d5cac780e94?permalink_comment_id=5051993
+			https://github.com/espressif/esp-adf/issues/297
 	
 	
 == T1. Multi-room ==
