@@ -1900,18 +1900,21 @@ void uartConsole(void* /*arg*/) {
 			// Split on space, set SSID to trailing string.
 			char* data = strstr(line, " ");
 			nvs_set_str(nvsHandle, "wifi_ssid", data);
+			wifi_ssid = std::string(data);
 			changed = true;
 		}
 		else if (strncmp(line, "passS ", 6) == 0) {
 			// Split on space, set password to trailing string.
 			char* data = strstr(line, " ");
 			nvs_set_str(nvsHandle, "wifi_pass", data);
+			wifi_pass = std::string(data);
 			changed = true;
 		}
 		else if (strncmp(line, "nameS ", 6) == 0) {
 			// Split on space, set hostname to trailing string.
 			char* data = strstr(line, " ");
 			nvs_set_str(nvsHandle, "hostname", data);
+			hostName = std::string(data);
 			changed = true;
 		}
 		else if (strncmp(line, "ssid", 4) == 0) {
