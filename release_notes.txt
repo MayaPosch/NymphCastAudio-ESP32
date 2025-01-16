@@ -1,0 +1,18 @@
+NymphCast Audio - ESP32 
+
+Release Notes
+---
+
+
+> v0.1:
+
+- Initial release.
+- Local content streaming (via NCP, NCMS, etc.) is well tested and expected to be stable.
+- Video formats (containers) are mostly untested and not recommended for streaming.
+- Internet radio streams generally work, but require a good (low-latency) WiFi connection.
+- Multi-room audio playback (via NCP group) has been somewhat tested.
+
+**Experimental features:**
+- These features may or may not work reliably. Feedback is welcome.
+- Internet radio streams: can be choppy, cut out or hang.
+- Multi-room audio: synchronisation may be off between slaves. 

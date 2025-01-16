@@ -32,7 +32,9 @@ Notes:
 	- Sample rate for I2S is fixed at 44.1 kHz, causes issues with e.g. 48 kHz files.
 		=> Fixed in sdl_dummy: return correct sample rate to player.
 	- Sometimes slight stutter on start (FLAC only?).
-	- Crash on [Stop]. => Fixed with change from `read_thread.join()` to `delete read_thread`.
+		=> Fixed with removal of unnecessary wait in buffering.
+	- Crash on [Stop]. 
+		=> Fixed with change from `read_thread.join()` to `delete read_thread`.
 
 2. Playback of various video formats (video & audio streams, audio-only output):
 	1. MKV
@@ -72,8 +74,11 @@ Criteria:
 	
 Findings:
 	- Playback is choppy with Shonan Beach FM stream. Drops out after a few minutes.
+		=> Much more stable on dodgy WAP (high latency?) with WiFi/TCP config tweaks.
 	- Some URLs cause a crash/hang requiring reset. => TODO: obtain logs & traces.
+		=> M3U8s seem to end up in a loop & hang, may need time-out?
 	- Playback quality seems heavily reliant on quality of the WiFi connection.
+		=> Confirmed. Adjusted WIFI & TCP stack with more (RX) buffers, etc.
 	
 	
 == T1. Multi-room ==
