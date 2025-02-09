@@ -437,10 +437,6 @@ void AudioRenderer::audio_thread(void *arg) {
     if (!frame) {
         return; // AVERROR(ENOMEM);
 	}
-	
-#ifdef ESP_PLATFORM
-	const TickType_t xDelay = 1 / portTICK_PERIOD_MS;
-#endif
 
 	run = true;
     do {
@@ -506,11 +502,6 @@ void AudioRenderer::audio_thread(void *arg) {
                 is->auddec.finished = is->auddec.pkt_serial;
 #endif
         }
-		
-#ifdef ESP_PLATFORM
-	// Wait for 1 ms.
-	vTaskDelay(xDelay);
-#endif
     } while (ret >= 0 || ret == AVERROR(EAGAIN) || ret == AVERROR_EOF);
  the_end:
 #if CONFIG_AVFILTER

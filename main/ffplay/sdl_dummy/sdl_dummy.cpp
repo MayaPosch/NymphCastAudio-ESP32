@@ -167,7 +167,6 @@ void audio_task(void* arg) {
 	audio_thread_active = true;
 	int audio_size, len1;
 	size_t bytes_written = 0;
-	const TickType_t xDelay = 1 / portTICK_PERIOD_MS;
 	while (audio_thread_active) {
 		audio_callback_time = av_gettime_relative();
 		
@@ -180,8 +179,8 @@ void audio_task(void* arg) {
 				//is->audio_buf = NULL;
 				//is->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / is->audio_tgt.frame_size * is->audio_tgt.frame_size;
 		
-				// Wait for 1 ms.
-				vTaskDelay(xDelay);
+				// Briefly yield.
+				vTaskDelay(1);
 				
 				continue;
 		   } 
